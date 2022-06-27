@@ -9,7 +9,7 @@ import videoMaker from "./contracts/video.abi.json";
 
 const ERC20_DECIMALS = 18;
 
-const contractAddress = "z";
+const contractAddress = "0x67cAd8190A35De5ccc77985cb2575281192600a0";
 const cUSDContractAddress = "0x874069Fa1Eb16D44d622F2e0Ca25eeA172369bC1";
 
 function App() {
