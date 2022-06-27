@@ -9,7 +9,7 @@ import videoMaker from "./contracts/video.abi.json";
 
 const ERC20_DECIMALS = 18;
 
-const contractAddress = "0x67cAd8190A35De5ccc77985cb2575281192600a0";
+const contractAddress = "z";
 const cUSDContractAddress = "0x874069Fa1Eb16D44d622F2e0Ca25eeA172369bC1";
 
 function App() {
@@ -230,7 +230,8 @@ function App() {
                       <h2 className="display-5">{video.title}</h2>
                       <p className="lead">{video.description}</p>
                       <div>
-                        <span>{video.timestamp.toString()}</span>
+                        {/* Format video properly e.g 12/9/2019, 10:30:15 AM GMT*/}
+                        <span>{video.timestamp.toLocaleString("en-US", {timeZoneName: "short"})}</span>
                       </div>
                     </div>
                     <div>

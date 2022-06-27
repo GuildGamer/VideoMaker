@@ -28,6 +28,7 @@ interface IERC20Token {
 }
 
 contract VideoMaker {
+
     struct Video {
         address payable owner;
         string videoLink;
@@ -42,16 +43,34 @@ contract VideoMaker {
     uint internal tipPrice;
     address internal admin;
 
+    event CreateVideoEvent(uint256 id, string title);
+    event LikeVideoEvent(uint256 id, address indexed user);
+    event DislikeVideoEvent(uint256 id, address indexed user);
+    event VerifyVideoEvent(uint256 id);
+
+    address internal cUsdTokenAddress = 0x874069Fa1Eb16D44d622F2e0Ca25eeA172369bC1;
+    mapping(uint => Video) internal videos;
+    mapping(uint256 => mapping(address => bool)) hasLiked;
+    mapping(uint256 => mapping(address => bool)) hasDisliked;
+
+    modifier onlyAdmin() {
+        require(msg.sender == admin, "Only admin can verify");
+        _;
+    }
+
+    modifier isVerified(uint _index) {
+        require(videos[_index].verified == true, "You can only like verified videos");
+        _;
+    }
+
+    
     constructor() {
         videoLength = 0;
         tipPrice = 2;
         admin = msg.sender;
     }
-
-    mapping(uint => Video) internal videos;
-    address internal cUsdTokenAddress =
-        0x874069Fa1Eb16D44d622F2e0Ca25eeA172369bC1;
-
+    
+    // create new video 
     function addVideo(
         string memory _videoLink,
         string memory _title,
@@ -67,13 +86,18 @@ contract VideoMaker {
             false,
             block.timestamp
         );
+
+        videoLength++;
+        emit CreateVideoEvent(videoLength, _title);
     }
 
-    function verifyVideo(uint index) public {
-        require(msg.sender == admin, "Only admin can verify");
+    // verify video at index `index`
+    function verifyVideo(uint index) public onlyAdmin {        
         videos[index].verified = true;
+        emit VerifyVideoEvent(index);
     }
 
+    // get video at index `index`
     function getVideos(uint index)
         public
         view
@@ -101,11 +125,9 @@ contract VideoMaker {
         );
     }
 
-    function likeVideo(uint index) public {
-        require(
-            videos[index].verified == true,
-            "You can only like verified videos"
-        );
+    // like video at index `index`
+    function likeVideo(uint index) public isVerified(index) {
+        require(!hasLiked[index][msg.sender], "You have already liked this video");
         require(
             IERC20Token(cUsdTokenAddress).transferFrom(
                 msg.sender,
@@ -115,14 +137,14 @@ contract VideoMaker {
             "This transaction could not be performed"
         );
 
-        videos[index].likes++;
+        videos[index].likes++;        
+        hasLiked[index][msg.sender] = true;
+        emit LikeVideoEvent(index, msg.sender);
     }
 
-    function dislikeVideo(uint index) public {
-        require(
-            videos[index].verified == true,
-            "You can only like verified videos"
-        );
+    // dislike video at index `index`
+    function dislikeVideo(uint index) public isVerified(index) { 
+        require(!hasDisliked[index][msg.sender], "You have already disliked this video");
         require(
             IERC20Token(cUsdTokenAddress).transferFrom(
                 msg.sender,
@@ -131,9 +153,13 @@ contract VideoMaker {
             ),
             "This transaction could not be performed"
         );
+
         videos[index].dislikes++;
+        hasDisliked[index][msg.sender] = true;
+        emit DislikeVideoEvent(index, msg.sender);
     }
 
+    // return total length of video created
     function getVideosLength() public view returns (uint) {
         return videoLength;
     }
