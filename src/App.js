@@ -35,8 +35,8 @@ function App() {
 
         kit.defaultAccount = user_address;
 
-        await setAddress(user_address);
-        await setKit(kit);
+        setAddress(user_address);
+        setKit(kit);
       } catch (error) {
         console.log(error);
       }
@@ -81,14 +81,12 @@ function App() {
       }
       const v = await Promise.all(videos);
       setVideos(v);
-      console.log("====================================");
-      console.log(v);
-      console.log("====================================");
     } catch (e) {
       console.log(e);
     }
   };
 
+  // recheck this
   const getContractOwner = async () => {
     try {
       const owner = await contract.methods.getContractOwner().call();
@@ -102,12 +100,9 @@ function App() {
     e.preventDefault();
     try {
       if (!video || !title || !description) return;
-      const tx = await contract.methods
-        .addVideo(video, title, description)
-        .send({
-          from: address,
-        });
-      console.log(tx);
+      await contract.methods.addVideo(video, title, description).send({
+        from: address,
+      });
       getVideos();
     } catch (error) {
       console.log(error);
@@ -122,10 +117,9 @@ function App() {
       await cUSDContract.methods
         .approve(contractAddress, tip)
         .send({ from: address });
-      const tx = await contract.methods.likeVideo(index).send({
+      await contract.methods.likeVideo(index).send({
         from: address,
       });
-      console.log(tx);
       getVideos();
     } catch (error) {
       console.log(error);
@@ -139,10 +133,9 @@ function App() {
       await cUSDContract.methods
         .approve(contractAddress, tip)
         .send({ from: address });
-      const tx = await contract.methods.dislikeVideo(index).send({
+      await contract.methods.dislikeVideo(index).send({
         from: address,
       });
-      console.log(tx);
       getVideos();
     } catch (error) {
       console.log(error);
@@ -151,10 +144,9 @@ function App() {
 
   const verifyVideo = async (index) => {
     try {
-      const tx = await contract.methods.verifyVideo(index).send({
+      await contract.methods.verifyVideo(index).send({
         from: address,
       });
-      console.log(tx);
       getVideos();
     } catch (error) {
       console.log(error);
@@ -214,9 +206,6 @@ function App() {
                 We are trying to decentralize video sharing by bringing it to
                 the blockchain
               </p>
-              <a className="btn btn-outline-secondary" href="#">
-                Demo
-              </a>
             </div>
             <div className="product-device shadow-sm d-none d-md-block" />
             <div className="product-device product-device-2 shadow-sm d-none d-md-block" />
@@ -224,7 +213,7 @@ function App() {
           <div className="">
             <div className="row">
               {videos.map((video) => (
-                <div className="col-6">
+                <div className="col-6 mt-4" key={video.index}>
                   <div className="bg-dark me-md-3 pt-3 px-3 pt-md-5 px-md-5 text-center text-white overflow-hidden">
                     <div className="my-3 py-3">
                       <h2 className="display-5">{video.title}</h2>
@@ -260,7 +249,7 @@ function App() {
                           onClick={() => starVideo(video.index)}
                           className="btn btn-secondary"
                         >
-                          <i class="bi bi-star"></i>
+                          <i className="bi bi-star"></i>
                           Rate ({video.likes})
                         </button>
 
@@ -269,7 +258,7 @@ function App() {
                           type="button"
                           className="btn btn-secondary"
                         >
-                          <i class="bi bi-x"></i>
+                          <i className="bi bi-x"></i>
                           Disapprove ({video.dislikes})
                         </button>
                       </div>
@@ -285,7 +274,7 @@ function App() {
           </div>
         </main>
 
-        <div className="p-3 w-50 justify-content-center">
+        <div className="p-3 w-50 d-flex flex-column mt-4">
           <h2>Create Your Experience</h2>
           <div className="">
             <form onSubmit={formSubmit}>
