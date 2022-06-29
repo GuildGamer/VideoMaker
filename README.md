@@ -1,10 +1,12 @@
+# Video Maker
+
 Video maker is a decentralized video streaming platform. It allows creators to share their videos and have others pay to rate  them. Videos are posted by creators but verified by admins. Videos that are  verified can then be rated or disapproved by other users. I made it such a way that users have to pay a small token to like videos to prevent from over rating or overdisapproving a video. This dapp was made using react and on the celo blockchain
 
 Link: https://lambent-clafoutis-e5a57d.netlify.app/
 
 
 
-# Getting Started with Create React App
+## Getting Started with Create React App
 
 This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
 
